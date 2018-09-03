@@ -15,6 +15,11 @@ func TestBlog(t *testing.T) {
 
 	db := dbConn()
 	defer db.Close()
+
+	if _, err := db.Exec("TRUNCATE TABLE posts"); err != nil {
+		t.Fatal(err)
+	}
+
 	res, err := db.Exec("INSERT INTO posts (title, body) VALUES ('post title', 'post body')")
 	if err != nil {
 		t.Fatal(err)
@@ -72,6 +77,11 @@ func TestSearch(t *testing.T) {
 
 	db := dbConn()
 	defer db.Close()
+
+	if _, err := db.Exec("TRUNCATE TABLE posts"); err != nil {
+		t.Fatal(err)
+	}
+
 	_, err := db.Exec("INSERT INTO posts (title, body) VALUES (?, 'random post body')", title)
 	if err != nil {
 		t.Fatal(err)
