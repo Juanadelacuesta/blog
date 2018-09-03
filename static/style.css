@@ -1,0 +1,38 @@
+ body {
+    text-align: left;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.input-group {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.green {
+    color: #00e489;
+}
+
+h3.date {
+    font-style: italic;
+    font-size: 15px;
+}
+
+.search-link {
+    border: 1px solid #cccdce;
+    display: block;
+    background-color: #edeeef;
+    padding: 10px 5px;
+    color: #333;
+}
+
+.search-link:hover {
+    color: #333;
+}
+
+.search-group {
+    margin-top: 15px;
+}
+
+.search-input {
+    margin-bottom: 20px;
+}
