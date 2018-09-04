@@ -1,14 +1,23 @@
-# EC-blog
+# Simple blog
 
-Simple blog posts visor where you can see and search all the available posts.
+Simple blog posts visor where you can see and search all the available posts written in Go using Gorilla Mux and the Mysql driver.
+The API has three endpioints:
+
+| Name          |Action             | Method  | Path                    | 
+| ------------- |:--------------:   |:-------:| :---------------------: | 
+| Index         | index             | GET     | "/"                     |
+| Show          | show post details | GET     | "/post/{id}             |
+| Search*       | search for a post | GET     | "/search?q={searchTerms}|
+
+*The search enpoint returns a json including the ID and Title of the posts matching the search terms.
 
 ## Getting Started
 
-Too run the server go to the file and execute the EC-blog file.
+Too run the server go to the file and execute the EC-blog file, or run it with go build it and run it usign Go.
 
 ### Prerequisites
 
-You should provide a Mysql database with:
+You should provide a Mysql database with the following table:
 
 ```
 CREATE TABLE IF NOT EXISTS posts (
@@ -30,7 +39,11 @@ In order to contribute you need to download the package [Gorilla Mux](https://gi
 ## Running the tests
 
 To run the test go to the project folder and run 
+
 ```
+go test
+```
+.
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
