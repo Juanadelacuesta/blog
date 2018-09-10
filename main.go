@@ -31,6 +31,11 @@ var routes = Routes{
 	},
 }
 
+type server struct {
+	router *mux.Router
+	db     *storage.Db
+}
+
 type Route struct {
 	Name        string
 	Method      string
@@ -39,19 +44,6 @@ type Route struct {
 }
 
 type Routes []Route
-
-func dbConn() (db *sql.DB) {
-	dbDriver := "mysql"
-	dbUser := os.Getenv("DB_USER")
-	dbPass := os.Getenv("DB_PASSWORD")
-	dbName := os.Getenv("DB_NAME")
-	db, err := sql.Open(dbDriver, dbUser+":"+dbPass+"@/"+dbName+"?parseTime=true")
-	if err != nil {
-		panic(err.Error())
-	}
-	return db
-}
-
 func NewRouter() *mux.Router {
 	router := mux.NewRouter().StrictSlash(true)
 	for _, route := range routes {
@@ -66,7 +58,9 @@ func NewRouter() *mux.Router {
 
 func main() {
 	router := NewRouter()
-
+	dbUser := os.Getenv("DB_USER")
+	dbPass := os.Getenv("DB_PASSWORD")
+	dbName := os.Getenv("DB_NAME")
 	srv := &http.Server{
 		Handler:      router,
 		Addr:         ":8080",
