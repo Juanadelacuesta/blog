@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"reflect"
 	"time"
 )
 
@@ -14,7 +15,11 @@ type Post struct {
 
 type Posts []Post
 
-func (Post) FormatDate(date time.Time) (s string) {
+func (p Post) FormatDate(date time.Time) (s string) {
 	s = fmt.Sprintf("%s %dth %d", date.Month(), date.Day(), date.Year())
 	return
+}
+
+func (p *Post) IsEmpty() bool {
+	return reflect.DeepEqual(p, Post{})
 }

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"database/sql"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -10,41 +10,13 @@ import (
 	"github.com/gorilla/mux"
 )
 
-var routes = Routes{
-	Route{
-		"Index",
-		"GET",
-		"/",
-		Index,
-	},
-	Route{
-		"Show",
-		"GET",
-		"/post/{id}",
-		Show,
-	},
-	Route{
-		"Search",
-		"GET",
-		"/search",
-		Search,
-	},
-}
-
-type server struct {
+type Blog struct {
 	router *mux.Router
-	db     *storage.Db
+	srv    *http.Server
+	db     Db
 }
 
-type Route struct {
-	Name        string
-	Method      string
-	Pattern     string
-	HandlerFunc http.HandlerFunc
-}
-
-type Routes []Route
-func NewRouter() *mux.Router {
+func NewRouter(routes Routes) *mux.Router {
 	router := mux.NewRouter().StrictSlash(true)
 	for _, route := range routes {
 		router.Methods(route.Method).
@@ -56,16 +28,28 @@ func NewRouter() *mux.Router {
 	return router
 }
 
-func main() {
-	router := NewRouter()
-	dbUser := os.Getenv("DB_USER")
-	dbPass := os.Getenv("DB_PASSWORD")
-	dbName := os.Getenv("DB_NAME")
-	srv := &http.Server{
-		Handler:      router,
+func NewBlog(dbUser, dbPass, dbName string) *Blog {
+	b := &Blog{}
+	b.router = NewRouter(b.GetRoutes())
+	b.srv = &http.Server{
+		Handler:      b.router,
 		Addr:         ":8080",
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
-	log.Fatal(srv.ListenAndServe())
+	b.db = &DB{
+		user:     dbUser,
+		password: dbPass,
+		name:     dbName,
+	}
+	return b
+}
+
+func main() {
+	dbUser := os.Getenv("DB_USER")
+	dbPass := os.Getenv("DB_PASSWORD")
+	dbName := os.Getenv("DB_NAME")
+	b := NewBlog(dbUser, dbPass, dbName)
+	fmt.Println(b)
+	log.Fatal(b.srv.ListenAndServe())
 }
