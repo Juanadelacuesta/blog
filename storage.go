@@ -24,6 +24,17 @@ func (m *DB) User() string {
 	return m.user
 }
 
+func scanRow(rows *sql.Rows) Post {
+	post := Post{}
+	var created time.Time
+	err := rows.Scan(&post.Id, &post.Title, &post.Body, &created)
+	if err != nil {
+		panic(err.Error())
+	}
+	post.Date = post.FormatDate(created)
+	return post
+}
+
 func (m *DB) dbConn() (db *sql.DB) {
 	db, err := sql.Open("mysql", m.user+":"+m.password+"@/"+m.name+"?parseTime=true")
 	if err != nil {
@@ -40,21 +51,9 @@ func (m *DB) GetPosts() Posts {
 	if err != nil {
 		panic(err.Error())
 	}
-	post := Post{}
 	posts := Posts{}
 	for rows.Next() {
-		var id int
-		var title, body string
-		var created time.Time
-		err = rows.Scan(&id, &title, &body, &created)
-		if err != nil {
-			panic(err.Error())
-		}
-		post.Id = id
-		post.Title = title
-		post.Body = body
-		post.Date = post.FormatDate(created)
-		posts = append(posts, post)
+		posts = append(posts, scanRow(rows))
 	}
 	return posts
 }
@@ -73,22 +72,16 @@ func (m *DB) GetByTerm(searchTerm string) Posts {
 	}
 
 	for rows.Next() {
-		var id int
-		var title string
-		err = rows.Scan(&id, &title)
+		err = rows.Scan(&post.Id, &post.Title)
 		if err != nil {
 			panic(err.Error())
 		}
-		post.Id = id
-		post.Title = title
 		posts = append(posts, post)
 	}
 	return posts
 }
 
 func (m *DB) GetById(postId string) Post {
-	post := Post{}
-
 	db := m.dbConn()
 	defer db.Close()
 	row, err := db.Query("SELECT * FROM posts WHERE id=?", postId)
@@ -98,20 +91,7 @@ func (m *DB) GetById(postId string) Post {
 
 	result := row.Next()
 	if !result {
-		return post
+		return Post{}
 	}
-
-	var id int
-	var title, body string
-	var created time.Time
-	err = row.Scan(&id, &title, &body, &created)
-	if err != nil {
-		panic(err.Error())
-	}
-	post.Id = id
-	post.Title = title
-	post.Body = body
-	post.Date = post.FormatDate(created)
-
-	return post
+	return scanRow(row)
 }

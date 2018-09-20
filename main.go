@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -50,6 +49,5 @@ func main() {
 	dbPass := os.Getenv("DB_PASSWORD")
 	dbName := os.Getenv("DB_NAME")
 	b := NewBlog(dbUser, dbPass, dbName)
-	fmt.Println(b)
 	log.Fatal(b.srv.ListenAndServe())
 }
