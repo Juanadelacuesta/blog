@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"html/template"
 	"net/http"
 
@@ -28,9 +27,7 @@ func (b *Blog) Search(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	searchTerm := terms[0]
-	fmt.Println("searchTerms", searchTerm)
 	posts = b.db.GetByTerm(searchTerm)
-	fmt.Println("posts ", posts)
 	json.NewEncoder(w).Encode(posts)
 	return
 }
